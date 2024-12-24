@@ -5,17 +5,24 @@ import { Button } from '@/components/ui/button'
 import Link from 'next/link'
 import { OrbitControls, useGLTF, Environment, SpotLight } from '@react-three/drei'
 import { supabase } from '@/utils/supabase/client'
-import { Canvas } from '@react-three/fiber'
+import { Canvas, useThree } from '@react-three/fiber'
 import { FeaturedClassCard } from '@/components/cards/featured-class-card'
 import { SchoolWaitlist } from '@/components/forms/school-waitlist'
+import { Mesh } from 'three'
 
 function Model({ url }: { url: string }) {
-  const { scene } = useGLTF(url)
-  return (
-    <Canvas>
-      <mesh>{scene}</mesh>
-    </Canvas>
-  )
+  const { scene: gltfScene } = useGLTF(url)
+  const { scene } = useThree()
+
+  useEffect(() => {
+    scene.add(gltfScene)
+    return () => {
+      scene.remove(gltfScene)
+      return undefined
+    }
+  }, [gltfScene, scene])
+
+  return null
 }
 
 export default function Home() {
